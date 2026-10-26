@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <rect width="800" height="600" fill="#0D111A"/>
+  <defs>
+    <pattern id="grid2" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#161F2E" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#grid2)"/>
+  <rect x="30" y="30" width="740" height="540" fill="none" stroke="#2A364F" stroke-width="1.2"/>
+  <text x="50" y="65" fill="#00E5FF" font-family="monospace" font-size="13">DETAIL B // HIGH-PRESSURE TURBINE STAGE 1 BLADE PROFILE</text>
+  <text x="50" y="85" fill="#7E95BC" font-family="monospace" font-size="10">SINGLE-CRYSTAL NICKEL SUPERALLOY // FILM COOLING HOLE ARRAY</text>
+
+  <!-- Aerofoil Blade Cross Section -->
+  <path d="M 180 300 C 220 180 400 160 620 320 C 500 370 320 380 180 300 Z" fill="#121824" stroke="#D3DDEB" stroke-width="3"/>
+
+  <!-- Camber Line & Stagnation Point -->
+  <path d="M 180 300 Q 380 260 620 320" fill="none" stroke="#FF5E1E" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <circle cx="180" cy="300" r="5" fill="#FF5E1E"/>
+  <text x="140" y="295" fill="#FF5E1E" font-family="monospace" font-size="10">STAG. PT</text>
+
+  <!-- Internal Serpentine Cooling Channels -->
+  <path d="M 260 260 Q 300 240 340 260 L 340 330 Q 300 350 260 330 Z" fill="#0D111A" stroke="#00E5FF" stroke-width="1.5"/>
+  <path d="M 370 265 Q 410 250 450 270 L 450 325 Q 410 340 370 325 Z" fill="#0D111A" stroke="#00E5FF" stroke-width="1.5"/>
+  <path d="M 480 280 Q 520 270 560 295 L 560 315 Q 520 325 480 315 Z" fill="#0D111A" stroke="#00E5FF" stroke-width="1.5"/>
+
+  <!-- Laser Cooling Holes Ejection -->
+  <g stroke="#00E5FF" stroke-width="1.2" opacity="0.8">
+    <line x1="220" y1="210" x2="200" y2="180"/>
+    <line x1="260" y1="185" x2="245" y2="155"/>
+    <line x1="310" y1="175" x2="300" y2="145"/>
+    <line x1="370" y1="180" x2="365" y2="150"/>
+  </g>
+  <text x="280" y="135" fill="#00E5FF" font-family="monospace" font-size="10">COOLING AIR FILM LAYER (BLEED STN-3)</text>
+
+  <text x="50" y="530" fill="#7E95BC" font-family="monospace" font-size="11">TET: 1,820 K (1,547°C) // ROTATIONAL VELOCITY: 12,450 RPM</text>
+  <text x="580" y="530" fill="#FFB300" font-family="monospace" font-size="11">AEROMACH PROPULSION</text>
+</svg>

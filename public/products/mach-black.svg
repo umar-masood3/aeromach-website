@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <rect width="800" height="600" fill="#0D111A"/>
+  <rect x="25" y="25" width="750" height="550" fill="none" stroke="#2A364F" stroke-width="1.2"/>
+  <text x="45" y="60" fill="#00E5FF" font-family="monospace" font-size="14" font-weight="bold">SUPERSONIC GAS DYNAMICS // MACH CONE & EXPANSION</text>
+  <text x="45" y="80" fill="#7E95BC" font-family="monospace" font-size="10">MACH NUMBER M = 2.2 // MACH ANGLE mu = arcsin(1/M) = 27.03°</text>
+
+  <!-- Flight Path Centerline -->
+  <line x1="60" y1="300" x2="740" y2="300" stroke="#7E95BC" stroke-width="1" stroke-dasharray="10,5"/>
+
+  <!-- Supersonic Wedge / Needle Projectile -->
+  <polygon points="560,300 320,270 320,330" fill="#121824" stroke="#D3DDEB" stroke-width="2"/>
+
+  <!-- Attached Oblique Shock Waves -->
+  <line x1="560" y1="300" x2="140" y2="90" stroke="#FF5E1E" stroke-width="2.5"/>
+  <line x1="560" y1="300" x2="140" y2="510" stroke="#FF5E1E" stroke-width="2.5"/>
+  <text x="110" y="85" fill="#FF5E1E" font-family="monospace" font-size="11">OBLIQUE SHOCK WAVE (BETA = 32.4°)</text>
+
+  <!-- Mach Cone Angle mu Angle Arc -->
+  <path d="M 500 300 A 60 60 0 0 0 508 273" fill="none" stroke="#00E5FF" stroke-width="1.5"/>
+  <text x="465" y="285" fill="#00E5FF" font-family="monospace" font-size="12">mu</text>
+
+  <!-- Prandtl-Meyer Expansion Fan at shoulder -->
+  <g stroke="#00E5FF" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.8">
+    <line x1="320" y1="270" x2="120" y2="200"/>
+    <line x1="320" y1="270" x2="120" y2="230"/>
+    <line x1="320" y1="270" x2="120" y2="260"/>
+  </g>
+  <text x="90" y="195" fill="#00E5FF" font-family="monospace" font-size="10">PRANDTL-MEYER EXPANSION FAN</text>
+
+  <!-- Acoustic Wavefront Circles -->
+  <circle cx="500" cy="300" r="30" fill="none" stroke="#7E95BC" stroke-width="0.8" opacity="0.4"/>
+  <circle cx="440" cy="300" r="60" fill="none" stroke="#7E95BC" stroke-width="0.8" opacity="0.4"/>
+  <circle cx="380" cy="300" r="90" fill="none" stroke="#7E95BC" stroke-width="0.8" opacity="0.4"/>
+
+  <text x="45" y="540" fill="#FFB300" font-family="monospace" font-size="11">ZONE OF SILENCE (OUTSIDE CONE) // ZONE OF ACTION (INSIDE CONE)</text>
+  <text x="600" y="540" fill="#7E95BC" font-family="monospace" font-size="11">AEROMACH AERO-04</text>
+</svg>

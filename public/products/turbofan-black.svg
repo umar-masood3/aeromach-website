@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <rect width="800" height="600" fill="#0D111A"/>
+  <!-- Engineering Grid -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1A2234" stroke-width="0.8"/>
+    </pattern>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#FF5E1E" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#grid)" />
+
+  <!-- Technical Border & Metadata -->
+  <rect x="25" y="25" width="750" height="550" fill="none" stroke="#2A364F" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <text x="45" y="55" fill="#7E95BC" font-family="monospace" font-size="12" letter-spacing="2">AEROMACH SPEC // DWG-TF-8804-A // STN-0-8</text>
+  <text x="620" y="55" fill="#FF5E1E" font-family="monospace" font-size="12" font-weight="bold">BYPASS RATIO 11.2:1</text>
+  <text x="45" y="555" fill="#7E95BC" font-family="monospace" font-size="10">SCALE: 1:24 // AXIAL COMPRESSION SYSTEM // TITANIUM BLISK</text>
+  <text x="640" y="555" fill="#00E5FF" font-family="monospace" font-size="10">PROPULSION LAB</text>
+
+  <!-- Centerline -->
+  <line x1="60" y1="300" x2="740" y2="300" stroke="#FF5E1E" stroke-width="1" stroke-dasharray="14,6,3,6" opacity="0.6"/>
+  <text x="745" y="304" fill="#FF5E1E" font-family="monospace" font-size="10">CL</text>
+
+  <!-- Nacelle Outline Upper -->
+  <path d="M 120 180 Q 200 130 380 135 L 560 180 Q 640 210 680 240 L 640 245 L 520 200 Q 360 165 200 160 Z" fill="#121824" stroke="#00E5FF" stroke-width="1.5"/>
+  <!-- Nacelle Outline Lower -->
+  <path d="M 120 420 Q 200 470 380 465 L 560 420 Q 640 390 680 360 L 640 355 L 520 400 Q 360 435 200 440 Z" fill="#121824" stroke="#00E5FF" stroke-width="1.5"/>
+
+  <!-- Fan Spinner Nose Cone -->
+  <path d="M 140 300 Q 170 250 220 250 L 220 350 Q 170 350 140 300 Z" fill="#1A2234" stroke="#D3DDEB" stroke-width="1.5"/>
+  <circle cx="200" cy="300" r="10" fill="none" stroke="#FF5E1E" stroke-width="1.2"/>
+
+  <!-- Fan Blades Upper & Lower -->
+  <g stroke="#D3DDEB" stroke-width="2">
+    <path d="M 220 250 C 210 200 180 160 160 140" fill="none"/>
+    <path d="M 230 250 C 220 200 190 160 170 140" fill="none"/>
+    <path d="M 240 250 C 230 200 200 160 180 140" fill="none"/>
+    <path d="M 220 350 C 210 400 180 440 160 460" fill="none"/>
+    <path d="M 230 350 C 220 400 190 440 170 460" fill="none"/>
+    <path d="M 240 350 C 230 400 200 440 180 460" fill="none"/>
+  </g>
+
+  <!-- Core Cowl & Splitter -->
+  <path d="M 280 230 Q 340 220 420 230 L 600 270 L 600 330 L 420 370 Q 340 380 280 370 Z" fill="#0D111A" stroke="#7E95BC" stroke-width="1.5"/>
+
+  <!-- Low & High Pressure Compressors (LPC / HPC) -->
+  <g stroke="#00E5FF" stroke-width="1.2">
+    <!-- Stage 1-4 -->
+    <line x1="310" y1="235" x2="310" y2="365" stroke-dasharray="2,2"/>
+    <line x1="340" y1="240" x2="340" y2="360"/>
+    <line x1="370" y1="245" x2="370" y2="355"/>
+    <line x1="400" y1="250" x2="400" y2="350"/>
+    <line x1="430" y1="255" x2="430" y2="345"/>
+  </g>
+
+  <!-- Combustor Chambers (Annular) -->
+  <rect x="450" y="258" width="55" height="18" rx="4" fill="#FF5E1E" fill-opacity="0.3" stroke="#FF5E1E" stroke-width="1.5"/>
+  <rect x="450" y="324" width="55" height="18" rx="4" fill="#FF5E1E" fill-opacity="0.3" stroke="#FF5E1E" stroke-width="1.5"/>
+  <text x="460" y="271" fill="#FF5E1E" font-family="monospace" font-size="8">IGN-A</text>
+  <text x="460" y="337" fill="#FF5E1E" font-family="monospace" font-size="8">IGN-B</text>
+
+  <!-- High & Low Pressure Turbines (HPT / LPT) -->
+  <g stroke="#FFB300" stroke-width="1.5">
+    <line x1="520" y1="260" x2="520" y2="340"/>
+    <line x1="540" y1="263" x2="540" y2="337"/>
+    <line x1="565" y1="266" x2="565" y2="334"/>
+  </g>
+
+  <!-- Exhaust Cone / Mixer Nozzle -->
+  <polygon points="600,285 710,300 600,315" fill="#1A2234" stroke="#7E95BC" stroke-width="1.5"/>
+
+  <!-- Station Callouts -->
+  <g font-family="monospace" font-size="9" fill="#00E5FF">
+    <text x="130" y="115">STN 0 (FREE)</text>
+    <line x1="150" y1="120" x2="150" y2="150" stroke="#00E5FF" stroke-width="0.8"/>
+
+    <text x="210" y="100">STN 1 (FAN)</text>
+    <line x1="230" y1="105" x2="230" y2="140" stroke="#00E5FF" stroke-width="0.8"/>
+
+    <text x="350" y="90">STN 3 (HPC DISCH.)</text>
+    <line x1="390" y1="95" x2="390" y2="245" stroke="#00E5FF" stroke-width="0.8"/>
+
+    <text x="490" y="90">STN 4 (TURBINE INLET)</text>
+    <line x1="520" y1="95" x2="520" y2="255" stroke="#00E5FF" stroke-width="0.8"/>
+
+    <text x="640" y="170">STN 8 (NOZZLE)</text>
+    <line x1="660" y1="175" x2="660" y2="235" stroke="#00E5FF" stroke-width="0.8"/>
+  </g>
+
+  <!-- Technical Dimension Lines -->
+  <line x1="120" y1="490" x2="680" y2="490" stroke="#7E95BC" stroke-width="0.8"/>
+  <line x1="120" y1="480" x2="120" y2="500" stroke="#7E95BC" stroke-width="1"/>
+  <line x1="680" y1="480" x2="680" y2="500" stroke="#7E95BC" stroke-width="1"/>
+  <text x="360" y="505" fill="#7E95BC" font-family="monospace" font-size="10" text-anchor="middle">TOTAL AXIAL ENVELOPE: 3,420 mm</text>
+</svg>

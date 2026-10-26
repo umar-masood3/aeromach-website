@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <rect width="800" height="600" fill="#0D111A"/>
+  <rect x="30" y="30" width="740" height="540" fill="none" stroke="#2A364F" stroke-width="1.2"/>
+  <text x="50" y="65" fill="#FFB300" font-family="monospace" font-size="13">LIFT-DRAG POLAR CURVE // cL vs cD</text>
+  <text x="50" y="85" fill="#7E95BC" font-family="monospace" font-size="10">DRAG POLAR: cD = cD0 + (cL^2) / (pi * AR * e)</text>
+
+  <!-- Axes -->
+  <line x1="150" y1="460" x2="680" y2="460" stroke="#7E95BC" stroke-width="1.5"/>
+  <line x1="150" y1="460" x2="150" y2="120" stroke="#7E95BC" stroke-width="1.5"/>
+  <text x="690" y="465" fill="#7E95BC" font-family="monospace" font-size="11">cD (DRAG)</text>
+  <text x="100" y="125" fill="#7E95BC" font-family="monospace" font-size="11">cL (LIFT)</text>
+
+  <!-- Polar Parabolic Curve -->
+  <path d="M 190 460 Q 230 380 320 280 T 560 160" fill="none" stroke="#00E5FF" stroke-width="2.5"/>
+
+  <!-- Tangent line from origin (Maximum L/D) -->
+  <line x1="150" y1="460" x2="480" y2="140" stroke="#FF5E1E" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <circle cx="340" cy="270" r="5" fill="#FF5E1E"/>
+  <text x="355" y="275" fill="#FF5E1E" font-family="monospace" font-size="11" font-weight="bold">(L/D)_max POINT: OPTIMAL GLIDE</text>
+
+  <rect x="50" y="500" width="320" height="40" fill="#121824" stroke="#2A364F" stroke-width="1"/>
+  <text x="65" y="525" fill="#00E5FF" font-family="monospace" font-size="11">PARASITIC DRAG cD0 = 0.0210 // AR = 9.4 // e = 0.82</text>
+</svg>
