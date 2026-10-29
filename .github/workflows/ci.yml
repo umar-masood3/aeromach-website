@@ -1,0 +1,75 @@
+# Aeromach — Continuous Integration
+#
+# Runs on every push to main and on every pull request targeting main.
+# Three gates must pass before a change can be merged:
+#   1. TypeScript typecheck  (tsc --noEmit)
+#   2. Unit / regression tests (vitest run)
+#   3. Production build      (next build)
+#
+# No secrets are required. The values below are throwaway placeholders so that
+# Prisma's CLI can parse the schema; nothing in this workflow connects to a
+# real database, Razorpay or Printify account.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Read-only token: this workflow only reads the repo.
+permissions:
+  contents: read
+
+# If you push twice quickly, cancel the older run instead of burning minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  # Dummy values, not secrets. `prisma validate` refuses to run without them.
+  DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
+  DIRECT_URL: "postgresql://ci:ci@localhost:5432/ci"
+
+jobs:
+  verify:
+    name: Typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # `npm ci` installs exactly what package-lock.json pins, so CI cannot
+      # drift from what runs locally.
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      # The Prisma client is generated code and is gitignored, so it must be
+      # regenerated on every run before typecheck or build.
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # Runs before the build so a broken test fails the job in ~15 seconds
+      # instead of after a full compile.
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
