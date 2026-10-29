@@ -38,10 +38,11 @@ export async function POST(
     let job = order.fulfillmentJobs[0];
 
     if (!job) {
+      // Use stable idempotency key to prevent duplicate fulfillment submissions
       job = await prisma.fulfillmentJob.create({
         data: {
           orderId: order.id,
-          idempotencyKey: `fulfillment_${order.id}_retry_${Date.now()}`,
+          idempotencyKey: `fulfillment_${order.id}`,
           status: 'PENDING',
           attempts: 0,
         },

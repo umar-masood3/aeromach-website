@@ -127,6 +127,12 @@ When deploying to production (e.g. Vercel, Render, Railway, VPS):
    - Generate a Personal Access Token from [Printify API settings](https://printify.com/app/account/api).
    - Set `PRINTIFY_API_TOKEN` and `PRINTIFY_SHOP_ID`.
    - Configure Webhook URL `https://your-domain.com/api/webhooks/printify`.
-4. **Disable Sandbox Simulator**:
-   - Set `ENABLE_TEST_PAYMENT_SIMULATOR="false"`.
+4. **Sandbox Simulator**:
+   - Leave `ENABLE_TEST_PAYMENT_SIMULATOR="false"` (the default in `.env.example`).
+   - This is only a secondary switch. The simulator is hard-blocked whenever
+     `NODE_ENV` is not exactly `development` or `test`, so `production`,
+     `staging` and preview deployments cannot reach the endpoint at all, and
+     the checkout page shows a "checkout disabled" notice instead of a pay
+     button when no gateway is configured.
    - Set a strong, random `ADMIN_SECRET_KEY`.
+

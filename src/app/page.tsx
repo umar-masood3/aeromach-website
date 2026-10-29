@@ -8,15 +8,23 @@ import { NewsletterForm } from '@/components/NewsletterForm';
 export const revalidate = 60; // ISR cache 60s
 
 export default async function HomePage() {
-  const featuredProducts = await prisma.product.findMany({
-    where: { isPublished: true, isFeatured: true },
-    include: {
-      variants: {
-        where: { isAvailable: true },
+  // Gracefully handle DB unavailability during static prerendering.
+  // If DATABASE_URL is not set or the DB is unreachable, render with empty products
+  // rather than crashing the entire build.
+  let featuredProducts: any[] = [];
+  try {
+    featuredProducts = await prisma.product.findMany({
+      where: { isPublished: true, isFeatured: true },
+      include: {
+        variants: {
+          where: { isAvailable: true },
+        },
       },
-    },
-    take: 6,
-  });
+      take: 6,
+    });
+  } catch (err) {
+    console.error('[HomePage] Database unavailable during prerender. Rendering with empty catalog.', err);
+  }
 
   const parsedProducts = featuredProducts.map((p) => ({
     ...p,

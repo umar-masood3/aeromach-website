@@ -1,25 +1,49 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateOrderPricing } from '../../lib/pricing';
 import { prisma } from '../../lib/prisma';
 
+// Mock Prisma for deterministic, isolated unit testing
+vi.mock('../../lib/prisma', () => ({
+  prisma: {
+    productVariant: {
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+    },
+    $disconnect: vi.fn(),
+  },
+}));
+
 describe('Unit Tests: Server-Authoritative Pricing & Validation', () => {
-  let sampleVariantId: string;
-  let sampleVariantPrice: number;
+  const sampleVariantId = 'var_turbofan_m_black';
+  const sampleVariantPrice = 1499;
 
-  beforeAll(async () => {
-    // Look up an existing seeded variant
-    const variant = await prisma.productVariant.findFirst({
-      where: { isAvailable: true },
+  const mockVariant = {
+    id: sampleVariantId,
+    productId: 'prod_turbofan_01',
+    title: 'M / Pitch Black',
+    size: 'M',
+    color: 'Pitch Black',
+    price: sampleVariantPrice,
+    costPrice: 850,
+    isAvailable: true,
+    printifyVariantId: 12002,
+    product: {
+      id: 'prod_turbofan_01',
+      title: 'The Turbofan Schematic T-Shirt',
+      isPublished: true,
+      printifyBlueprintId: 12,
+      printifyProviderId: 29,
+    },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (prisma.productVariant.findUnique as any).mockImplementation(({ where }: { where: { id: string } }) => {
+      if (where.id === sampleVariantId) {
+        return Promise.resolve(mockVariant);
+      }
+      return Promise.resolve(null);
     });
-    if (!variant) {
-      throw new Error('No seeded product variant found. Ensure seed is run.');
-    }
-    sampleVariantId = variant.id;
-    sampleVariantPrice = variant.price;
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   it('calculates correct item totals and subtotal for single item', async () => {
@@ -52,23 +76,21 @@ describe('Unit Tests: Server-Authoritative Pricing & Validation', () => {
       'India'
     );
 
-    if (result.subtotal < 2500) {
-      expect(result.shippingFee).toBe(150);
-      expect(result.totalAmount).toBe(result.subtotal + 150);
-    }
+    expect(result.subtotal).toBe(1499);
+    expect(result.shippingFee).toBe(150);
+    expect(result.totalAmount).toBe(1499 + 150);
   });
 
   it('applies free domestic shipping at or above ₹2,500 threshold', async () => {
-    // Two tees or a hoodie will exceed ₹2,500
+    // Two tees (₹2,998) exceeds ₹2,500 threshold
     const result = await calculateOrderPricing(
       [{ variantId: sampleVariantId, quantity: 2 }],
       'India'
     );
 
-    if (result.subtotal >= 2500) {
-      expect(result.shippingFee).toBe(0);
-      expect(result.totalAmount).toBe(result.subtotal);
-    }
+    expect(result.subtotal).toBe(2998);
+    expect(result.shippingFee).toBe(0);
+    expect(result.totalAmount).toBe(2998);
   });
 
   it('applies international shipping rate for non-domestic destinations', async () => {

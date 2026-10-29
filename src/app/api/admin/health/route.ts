@@ -3,11 +3,12 @@ import { prisma } from '@/lib/prisma';
 import { printify } from '@/lib/printify';
 import { razorpayService } from '@/lib/razorpay';
 import { verifyAdminAccess } from '@/lib/admin-auth';
-
-export async function GET(request: NextRequest) {
-  if (!verifyAdminAccess(request)) {
+import { evaluatePaymentSimulator } from "@/lib/payment-simulator";
+export async function GET(request: NextRequest){
+  if (!verifyAdminAccess(request)){
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
+
 
   try {
     // 1. Database check
@@ -54,7 +55,9 @@ export async function GET(request: NextRequest) {
       RAZORPAY_KEY_SECRET: razorpayConfigured,
       RAZORPAY_WEBHOOK_SECRET: Boolean(process.env.RAZORPAY_WEBHOOK_SECRET),
       ADMIN_SECRET_KEY: Boolean(process.env.ADMIN_SECRET_KEY),
-      ENABLE_TEST_PAYMENT_SIMULATOR: process.env.ENABLE_TEST_PAYMENT_SIMULATOR === 'true',
+      // Report the EFFECTIVE state, not the raw flag: a dashboard that reads
+      // "true" while the endpoint is actually blocked would be misleading.
+      PAYMENT_SIMULATOR_ENABLED: evaluatePaymentSimulator().enabled,
     };
 
     return NextResponse.json({

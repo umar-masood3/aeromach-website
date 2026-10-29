@@ -3,6 +3,8 @@
  * Conforms strictly to official Printify REST API v1 (https://developers.printify.com/)
  */
 
+import { isDemoMode } from './demo-mode';
+
 export interface PrintifyShop {
   id: number;
   title: string;
@@ -86,7 +88,9 @@ class PrintifyClient {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}, retries = 2): Promise<T> {
-    if (!this.isConfigured()) {
+    // In demo mode or if credentials are unconfigured, always use the isolated mock adapter.
+    // This strictly prevents real orders from ever being submitted to Printify in demo environments.
+    if (!this.isConfigured() || isDemoMode()) {
       return this.handleMockRequest<T>(endpoint, options);
     }
 

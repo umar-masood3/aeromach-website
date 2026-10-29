@@ -1,7 +1,13 @@
 import { NextRequest } from 'next/server';
 
 export function verifyAdminAccess(request: NextRequest): boolean {
-  const secret = process.env.ADMIN_SECRET_KEY || 'aeromach_dev_admin_key_2026';
+  // SECURITY: Never fall back to a hardcoded secret.
+  // If ADMIN_SECRET_KEY is not configured, deny all admin access.
+  const secret = process.env.ADMIN_SECRET_KEY;
+  if (!secret) {
+    console.error('[admin-auth] ADMIN_SECRET_KEY environment variable is not set. All admin access denied.');
+    return false;
+  }
 
   // Check header
   const headerKey = request.headers.get('x-admin-key');

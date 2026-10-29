@@ -3,15 +3,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding Aeromach catalog...');
-
-  // Clean existing development products to ensure clean seed
-  await prisma.orderItem.deleteMany();
-  await prisma.fulfillmentJob.deleteMany();
-  await prisma.auditLog.deleteMany();
-  await prisma.order.deleteMany();
-  await prisma.productVariant.deleteMany();
-  await prisma.product.deleteMany();
+  console.log('Seeding Aeromach catalog (idempotent — safe to re-run)...');
+  // IMPORTANT: We never delete orders, payments, or fulfillment records.
+  // This seed is idempotent: it upserts products by slug.
+  // Customer data is never touched.
 
   const productsData = [
     {
@@ -215,26 +210,64 @@ async function main() {
 
   for (const p of productsData) {
     const { variants, ...prodInfo } = p;
-    const createdProduct = await prisma.product.create({
-      data: {
+
+    // Upsert the product by slug — never replaces with create if it already exists.
+    const upsertedProduct = await prisma.product.upsert({
+      where: { slug: prodInfo.slug },
+      update: {
+        title: prodInfo.title,
+        subtitle: prodInfo.subtitle,
+        description: prodInfo.description,
+        category: prodInfo.category,
+        specifications: prodInfo.specifications,
+        careInstructions: prodInfo.careInstructions,
+        images: prodInfo.images,
+        basePrice: prodInfo.basePrice,
+        currency: prodInfo.currency,
+        isPublished: prodInfo.isPublished,
+        isFeatured: prodInfo.isFeatured,
+        printifyProductId: prodInfo.printifyProductId,
+        printifyBlueprintId: prodInfo.printifyBlueprintId,
+        printifyProviderId: prodInfo.printifyProviderId,
+        lastSyncedAt: new Date(),
+      },
+      create: {
         ...prodInfo,
         lastSyncedAt: new Date(),
-        variants: {
-          create: variants.map(v => ({
-            title: `${v.size} / ${v.color}`,
-            size: v.size,
-            color: v.color,
-            colorHex: v.colorHex,
-            sku: `AM-${prodInfo.slug.toUpperCase().slice(0, 4)}-${v.size}-${v.color.toUpperCase().slice(0, 3)}`,
-            price: v.price,
-            costPrice: v.costPrice,
-            isAvailable: true,
-            printifyVariantId: v.printifyVariantId,
-          }))
-        }
-      }
+      },
     });
-    console.log(`Created product: ${createdProduct.title} (${createdProduct.slug})`);
+
+    // For each variant, upsert by SKU. This is safe to rerun.
+    for (const v of variants) {
+      const sku = `AM-${prodInfo.slug.toUpperCase().slice(0, 4)}-${v.size}-${v.color.toUpperCase().slice(0, 3)}`;
+      await prisma.productVariant.upsert({
+        where: { sku },
+        update: {
+          title: `${v.size} / ${v.color}`,
+          size: v.size,
+          color: v.color,
+          colorHex: v.colorHex,
+          price: v.price,
+          costPrice: v.costPrice,
+          isAvailable: true,
+          printifyVariantId: v.printifyVariantId,
+        },
+        create: {
+          productId: upsertedProduct.id,
+          title: `${v.size} / ${v.color}`,
+          size: v.size,
+          color: v.color,
+          colorHex: v.colorHex,
+          sku,
+          price: v.price,
+          costPrice: v.costPrice,
+          isAvailable: true,
+          printifyVariantId: v.printifyVariantId,
+        },
+      });
+    }
+
+    console.log(`Upserted product: ${upsertedProduct.title} (${upsertedProduct.slug})`);
   }
 
   console.log('Aeromach catalog seeded successfully!');

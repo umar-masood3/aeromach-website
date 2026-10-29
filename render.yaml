@@ -1,0 +1,42 @@
+# render.yaml — Render deployment configuration for Aeromach
+# Documentation: https://render.com/docs/render-yaml-spec
+#
+# Environment variables that contain secrets (DATABASE_URL, DIRECT_URL,
+# ADMIN_SECRET_KEY, RAZORPAY_*, PRINTIFY_*) must be added manually in
+# the Render dashboard. They are NOT stored in this file.
+
+services:
+  - type: web
+    name: aeromach
+    runtime: node
+    region: singapore  # Choose closest to your audience
+    plan: free          # Render free tier (note: spins down after inactivity)
+
+    buildCommand: |
+      npm ci
+      npx prisma generate
+      npx prisma migrate deploy
+      npx tsx prisma/seed.ts
+      npm run build
+
+    startCommand: npm run start
+
+    envVars:
+      # Set these in Render Dashboard → Environment:
+      # DATABASE_URL  (Neon pooled connection string)
+      # DIRECT_URL    (Neon direct connection string — same host, no pooler)
+      # ADMIN_SECRET_KEY  (strong random secret, min 32 chars)
+      # RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET / RAZORPAY_WEBHOOK_SECRET
+      # PRINTIFY_API_TOKEN / PRINTIFY_SHOP_ID / PRINTIFY_WEBHOOK_SECRET
+
+      - key: NODE_ENV
+        value: production
+      - key: DEMO_MODE
+        value: "true"
+      - key: ENABLE_TEST_PAYMENT_SIMULATOR
+        value: "false"
+      - key: NEXT_PUBLIC_BRAND_NAME
+        value: Aeromach
+      - key: NEXT_PUBLIC_APP_URL
+        # Replace with your actual Render public URL once deployed
+        value: https://aeromach.onrender.com

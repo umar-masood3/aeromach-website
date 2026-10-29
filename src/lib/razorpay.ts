@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
+import { isDemoMode } from './demo-mode';
 
 export interface RazorpayOrderResult {
   id: string;
@@ -61,7 +62,8 @@ class RazorpayService {
   ): Promise<RazorpayOrderResult> {
     const amountInPaise = Math.round(amount * 100);
 
-    if (this.isConfigured() && this.client) {
+    // In demo mode or if credentials are not configured, never collect real payments
+    if (this.isConfigured() && this.client && !isDemoMode()) {
       const order = await this.client.orders.create({
         amount: amountInPaise,
         currency: 'INR',

@@ -1,6 +1,7 @@
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -39,7 +40,7 @@ model ProductVariant {
   size              String      // "S", "M", "L", "XL", "2XL"
   color             String      // "Pitch Black", "Steel Grey", "White"
   colorHex          String?
-  sku               String?
+  sku               String?     @unique
   price             Float
   costPrice         Float?      // Printify production cost (never public)
   isAvailable       Boolean     @default(true)

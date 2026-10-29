@@ -4,6 +4,7 @@ import { CartProvider } from '@/components/cart/CartContext';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { DemoBanner } from '@/components/layout/DemoBanner';
 
 export const metadata: Metadata = {
   title: 'Aeromach — Aerospace & Aviation Technical Apparel Lab',
@@ -23,6 +24,7 @@ export default function RootLayout({
         <script src="https://checkout.razorpay.com/v1/checkout.js" async />
       </head>
       <body className="min-h-screen flex flex-col bg-aerospace-950 text-slate-100">
+        <DemoBanner />
         <CartProvider>
           <Navbar />
           <CartDrawer />

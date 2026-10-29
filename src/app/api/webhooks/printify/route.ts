@@ -1,9 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { prisma } from '@/lib/prisma';
+
+/**
+ * Verify the Printify webhook signature using HMAC-SHA256.
+ * Printify sends `X-Printify-Signature` header = HMAC-SHA256(rawBody, webhookSecret).
+ * We require PRINTIFY_WEBHOOK_SECRET to be set; if absent, reject the request.
+ */
+function verifyPrintifySignature(rawBody: string, request: NextRequest): boolean {
+  const webhookSecret = process.env.PRINTIFY_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error('[printify-webhook] PRINTIFY_WEBHOOK_SECRET is not configured. Rejecting webhook.');
+    return false;
+  }
+  const signature = request.headers.get('x-printify-signature') || request.headers.get('x-hub-signature-256');
+  if (!signature) {
+    console.warn('[printify-webhook] Missing signature header on incoming request.');
+    return false;
+  }
+  const expectedHex = createHmac('sha256', webhookSecret).update(rawBody, 'utf8').digest('hex');
+  // Normalise: Printify may prefix with 'sha256='
+  const receivedHex = signature.startsWith('sha256=') ? signature.slice(7) : signature;
+  try {
+    return timingSafeEqual(Buffer.from(expectedHex, 'hex'), Buffer.from(receivedHex, 'hex'));
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
+
+    // SECURITY: Verify HMAC signature before processing any payload.
+    if (!verifyPrintifySignature(rawBody, request)) {
+      console.warn('[printify-webhook] Signature verification failed. Request rejected.');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const event = JSON.parse(rawBody);
 
     const eventId = event.id || `pf_evt_${Date.now()}_${Math.random()}`;

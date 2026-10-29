@@ -11,7 +11,12 @@ export async function GET(
     // Lookup by tracking token or order id
     const order = await prisma.order.findFirst({
       where: {
-        OR: [{ trackingToken: id }, { id: id }, { orderNumber: id }],
+        // SECURITY: Do NOT include { id: id } in the OR clause.
+        // Prisma CUIDs are not cryptographically unpredictable; allowing lookup
+        // by internal CUID would leak order information to anyone who can guess
+        // or enumerate IDs. Only trackingToken (UUID v4) and orderNumber are
+        // permitted as public lookup keys.
+        OR: [{ trackingToken: id }, { orderNumber: id }],
       },
       include: {
         items: {

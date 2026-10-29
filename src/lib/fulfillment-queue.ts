@@ -1,6 +1,9 @@
 import { prisma } from './prisma';
 import { printify, CreatePrintifyOrderPayload, PrintifyOrderLineItem } from './printify';
-
+import {
+  isSimulatedFulfillmentStatus,
+  isSimulatedPaymentId,
+} from "./payment-simulator";
 export async function enqueueFulfillment(orderId: string): Promise<string> {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
@@ -11,8 +14,21 @@ export async function enqueueFulfillment(orderId: string): Promise<string> {
     throw new Error(`Order ${orderId} not found.`);
   }
 
-  if (order.paymentStatus !== 'PAID') {
-    throw new Error(`Cannot fulfill unpaid order. Payment status is ${order.paymentStatus}`);
+  if (order.paymentStatus !== "PAID") {
+    throw new Error(
+      `Cannot fulfill unpaid order. Payment status is ${order.paymentStatus}`,
+    );
+  }
+
+  // Defence in depth (Problem A): a payment produced by the test simulator must
+  // never become a real supplier order, no matter who calls this function.
+  if (
+    isSimulatedFulfillmentStatus(order.fulfillmentStatus) ||
+    isSimulatedPaymentId(order.razorpayPaymentId)
+  ) {
+    throw new Error(
+      "Refusing to fulfil a simulated test order. Test-mode payments must never trigger real supplier production.",
+    );
   }
 
   // Idempotency: verify no existing fulfillment job or completed submission
@@ -22,7 +38,7 @@ export async function enqueueFulfillment(orderId: string): Promise<string> {
   });
 
   if (existingJob) {
-    if (existingJob.status === 'COMPLETED') {
+    if (existingJob.status === "COMPLETED") {
       return existingJob.id;
     }
     // If pending or failed, proceed to process/retry
@@ -34,7 +50,7 @@ export async function enqueueFulfillment(orderId: string): Promise<string> {
     data: {
       orderId: order.id,
       idempotencyKey,
-      status: 'PENDING',
+      status: "PENDING",
       attempts: 0,
       payload: JSON.stringify({
         orderNumber: order.orderNumber,
@@ -45,14 +61,14 @@ export async function enqueueFulfillment(orderId: string): Promise<string> {
 
   await prisma.order.update({
     where: { id: order.id },
-    data: { fulfillmentStatus: 'QUEUED' },
+    data: { fulfillmentStatus: "QUEUED" },
   });
 
   await prisma.auditLog.create({
     data: {
       orderId: order.id,
-      action: 'FULFILLMENT_QUEUED',
-      actor: 'SYSTEM',
+      action: "FULFILLMENT_QUEUED",
+      actor: "SYSTEM",
       details: `Enqueued fulfillment job ${job.id}`,
     },
   });
