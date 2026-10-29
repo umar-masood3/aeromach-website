@@ -1,5 +1,7 @@
 # Aeromach — Aerospace & Aviation Technical Apparel Lab
 
+[![CI](https://github.com/umar-masood3/aeromach-website/actions/workflows/ci.yml/badge.svg)](https://github.com/umar-masood3/aeromach-website/actions/workflows/ci.yml)
+
 Aeromach is an independent e-commerce brand engineered for aerospace engineers, aviation professionals, fluid mechanics researchers, pilots, and minimalist technical streetwear enthusiasts.
 
 Built from first principles: Precision CAD line-art, aerodynamic vector equilibrium, and supersonic fluid dynamics translated into minimal, high-density apparel with server-authoritative checkout and Printify on-demand fulfillment.
