@@ -1,11 +1,23 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { prisma } from '../../lib/prisma';
+
 import { calculateOrderPricing } from '../../lib/pricing';
 import { razorpayService } from '../../lib/razorpay';
 import { enqueueFulfillment, processFulfillmentJob, reconcileOrderStatus } from '../../lib/fulfillment-queue';
 import { generateOrderNumber, generateTrackingToken } from '../../lib/utils';
 
-describe('Integration Tests: End-to-End Order Lifecycle, Payment & Outbox Fulfillment', () => {
+/**
+ * These tests need a live PostgreSQL database with seed data.
+ *
+ * They are skipped (not failed) unless explicitly opted in, so `npm test` stays
+ * green on a clean clone and in CI without a database service. To run them:
+ *
+ *   RUN_DB_TESTS=true DATABASE_URL="postgresql://..." npm test
+ */
+const dbAvailable =
+  process.env.RUN_DB_TESTS === 'true' && Boolean(process.env.DATABASE_URL);
+
+describe.skipIf(!dbAvailable)('Integration Tests: End-to-End Order Lifecycle, Payment & Outbox Fulfillment', () => {
   let testVariant: any;
 
   beforeAll(async () => {
