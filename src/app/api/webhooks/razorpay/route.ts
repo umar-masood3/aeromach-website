@@ -8,12 +8,14 @@ export async function POST(request: NextRequest) {
     const rawBody = await request.text();
     const signature = request.headers.get('x-razorpay-signature') || '';
 
-    // Verify webhook signature if configured
-    if (razorpayService.isConfigured()) {
-      const isValid = razorpayService.verifyWebhookSignature(rawBody, signature);
-      if (!isValid) {
-        return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 400 });
-      }
+    // PROBLEM B: verification is MANDATORY, not conditional.
+    // Previously this only ran when isConfigured() was true, so an unconfigured
+    // deployment processed unsigned webhook payloads - including ones that
+    // could mark an order PAID.
+    const isValid = razorpayService.verifyWebhookSignature(rawBody, signature);
+    if (!isValid) {
+      console.warn('[razorpay-webhook] Signature verification failed. Request rejected.');
+      return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
     }
 
     const event = JSON.parse(rawBody);

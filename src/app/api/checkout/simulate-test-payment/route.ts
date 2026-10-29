@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { razorpayService } from "@/lib/razorpay";
 import {
   evaluatePaymentSimulator,
   SIMULATED_FULFILLMENT_STATUS,
@@ -32,6 +31,15 @@ import {
 export const dynamic = "force-dynamic";
 
 const BLOCKED_RESPONSE = { success: false, error: "Not found" };
+
+/**
+ * The simulator does NOT fabricate a cryptographic signature. Minting one would
+ * require the real RAZORPAY_KEY_SECRET, and any value that "looks valid" is a
+ * liability if it ever leaks into a real verification path. This literal is
+ * unmistakably not a signature, and the order is simultaneously stamped
+ * SIMULATED_TEST_ONLY so it can never reach fulfilment.
+ */
+const SIMULATED_SIGNATURE_MARKER = "simulated-no-signature";
 
 export async function POST(request: NextRequest) {
   const decision = evaluatePaymentSimulator();
@@ -91,18 +99,13 @@ export async function POST(request: NextRequest) {
     const razorpayOrderId =
       order.razorpayOrderId || `order_sim_${order.orderNumber}`;
     const razorpayPaymentId = `${SIMULATED_PAYMENT_ID_PREFIX}${Math.random().toString(36).substring(2, 12)}`;
-    const testSignature = razorpayService.generateTestSignature(
-      razorpayOrderId,
-      razorpayPaymentId,
-    );
-
     const updatedOrder = await prisma.order.update({
       where: { id: order.id },
       data: {
         paymentStatus: "PAID",
         razorpayOrderId,
         razorpayPaymentId,
-        razorpaySignature: testSignature,
+        razorpaySignature: SIMULATED_SIGNATURE_MARKER,
         // Explicitly test-only: keeps the order out of every real fulfillment path.
         fulfillmentStatus: SIMULATED_FULFILLMENT_STATUS,
         adminNotes:

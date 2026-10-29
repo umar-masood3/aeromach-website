@@ -225,38 +225,6 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleSimulatePayment = async () => {
-    if (!createdOrder) return;
-
-    // Only ever available when the server has confirmed a local sandbox.
-    if (checkoutMode !== "sandbox") {
-      setCheckoutError(
-        "The test payment simulator is not available on this deployment.",
-      );
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      const res = await fetch("/api/checkout/simulate-test-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId: createdOrder.orderId }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        clearCart();
-        router.push(`/order/${createdOrder.trackingToken}`);
-      } else {
-        setCheckoutError(data.error || "Payment simulation failed");
-      }
-    } catch (err: any) {
-      setCheckoutError(err.message || "Error simulating test payment");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   if (items.length === 0 && !createdOrder) {
     return (

@@ -5,6 +5,22 @@ import { enqueueFulfillment } from '@/lib/fulfillment-queue';
 
 export async function POST(request: NextRequest) {
   try {
+    // PROBLEM B: refuse to verify anything when no genuine key secret exists.
+    // Without this, an unconfigured deployment would attempt verification and
+    // (previously) accept signatures derived from a published placeholder.
+    if (!razorpayService.canVerifyPaymentSignature()) {
+      console.error(
+        '[verify-payment] RAZORPAY_KEY_SECRET is not configured. Refusing to verify payments.'
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Payment verification is not available on this deployment.',
+        },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const { orderId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = body;
 
